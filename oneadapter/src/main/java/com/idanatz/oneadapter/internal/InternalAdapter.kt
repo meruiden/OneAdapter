@@ -361,4 +361,8 @@ internal class InternalAdapter(val recyclerView: RecyclerView) : RecyclerView.Ad
         endlessScrollListener?.let { recyclerView.removeOnScrollListener(it) }
     }
     //endregion
+
+    fun resetPaging() {
+        endlessScrollListener?.resetState()
+    }
 }
