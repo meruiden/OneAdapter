@@ -132,4 +132,11 @@ class OneAdapter(recyclerView: RecyclerView) {
     fun getItemViewTypeFromClass(clazz: Class<*>): Int {
         return internalAdapter.getItemViewTypeFromClass(clazz)
     }
+
+    /**
+     * Resets the paging module.
+     */
+    fun resetPaging() {
+        internalAdapter.resetPaging()
+    }
 }
