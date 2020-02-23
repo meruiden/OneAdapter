@@ -1,13 +1,13 @@
 package com.idanatz.oneadapter.tests.modules.item
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.idanatz.oneadapter.external.interfaces.Item
 import com.idanatz.oneadapter.external.modules.ItemModule
 import com.idanatz.oneadapter.helpers.BaseTest
 import com.idanatz.oneadapter.internal.holders.ViewBinder
 import com.idanatz.oneadapter.models.TestModel
 import com.idanatz.oneadapter.test.R
 import org.amshove.kluent.shouldEqualTo
-import org.awaitility.Awaitility.await
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -18,32 +18,30 @@ class WhenItemLeavesTheScreenOnUnbindShouldBeCalledOnce : BaseTest() {
 
     @Test
     fun test() {
-        // preparation
-        val numberOfHoldersInScreen = getNumberOfHoldersThatCanBeOnScreen(testedLayoutResource)
-        val models = modelGenerator.generateModels(numberOfHoldersInScreen + 4) // create enough items that some can get recycled
-        runOnActivity {
-            oneAdapter.attachItemModule(TestItemModule())
-            oneAdapter.add(models)
-        }
+        configure {
+            val numberOfHoldersInScreen = getNumberOfHoldersThatCanBeOnScreen(testedLayoutResource)
+            val models = modelGenerator.generateModels(numberOfHoldersInScreen + 4) // create enough items that some can get recycled
 
-        // action
-        runOnActivity {
-            runWithDelay { // run with delay to let the items settle
-                recyclerView.smoothScrollToPosition(oneAdapter.itemCount - 1)
+            prepareOnActivity {
+                oneAdapter.attachItemModule(TestItemModule())
+                oneAdapter.add(models)
             }
-        }
-
-        // assertion
-        await().untilAsserted {
-            models.sumBy { it.onUnbindCalls } shouldEqualTo 1
+            actOnActivity {
+                runWithDelay { // run with delay to let the items settle
+                    recyclerView.smoothScrollToPosition(oneAdapter.itemCount - 1)
+                }
+            }
+            untilAsserted {
+                models.sumBy { it.onUnbindCalls } shouldEqualTo 1
+            }
         }
     }
 
     inner class TestItemModule : ItemModule<TestModel>() {
         override fun provideModuleConfig() = modulesGenerator.generateValidItemModuleConfig(testedLayoutResource)
-        override fun onBind(model: TestModel, viewBinder: ViewBinder) {}
-        override fun onUnbind(model: TestModel, viewBinder: ViewBinder) {
-            model.onUnbindCalls++
+        override fun onBind(item: Item<TestModel>, viewBinder: ViewBinder) {}
+        override fun onUnbind(item: Item<TestModel>, viewBinder: ViewBinder) {
+            item.model.onUnbindCalls++
         }
     }
 }

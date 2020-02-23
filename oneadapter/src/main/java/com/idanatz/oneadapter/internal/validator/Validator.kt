@@ -2,18 +2,18 @@ package com.idanatz.oneadapter.internal.validator
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
+import com.idanatz.oneadapter.external.*
 import com.idanatz.oneadapter.external.interfaces.Diffable
 import com.idanatz.oneadapter.external.modules.ItemModule
-import com.idanatz.oneadapter.external.holders.OneHolderModel
+import com.idanatz.oneadapter.external.holders.OneInternalHolderModel
 import java.lang.NullPointerException
-import kotlin.contracts.contract
 
 internal class Validator {
 
     companion object {
 
         fun validateItemsAgainstRegisteredModules(itemModulesMap: MutableMap<Class<*>, ItemModule<*>>, items: List<Diffable>) {
-            items.filterNot { it is OneHolderModel }.find { !itemModulesMap.containsKey(it.javaClass) }?.let {
+            items.filterNot { it is OneInternalHolderModel }.find { !itemModulesMap.containsKey(it.javaClass) }?.let {
                 throw MissingModuleDefinitionException("did you forget to attach ItemModule? (model: ${it.javaClass})")
             }
         }
@@ -34,6 +34,12 @@ internal class Validator {
 
         fun validateLayoutManagerExists(recyclerView: RecyclerView): RecyclerView.LayoutManager {
             return recyclerView.layoutManager ?: throw MissingLayoutManagerException("RecyclerView's Layout Manager must be configured")
+        }
+
+        fun validateModelClassIsDiffable(clazz: Class<*>) {
+            if (!Diffable::class.java.isAssignableFrom(clazz)) {
+                throw UnsupportedClassException("${clazz.simpleName} must implement Diffable interface")
+            }
         }
     }
 }

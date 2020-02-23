@@ -2,6 +2,7 @@ package com.idanatz.oneadapter.tests.module_configs.layout_module_config
 
 import android.view.View
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.idanatz.oneadapter.external.interfaces.Item
 import com.idanatz.oneadapter.external.modules.ItemModule
 import com.idanatz.oneadapter.external.modules.ItemModuleConfig
 import com.idanatz.oneadapter.helpers.BaseTest
@@ -10,7 +11,6 @@ import com.idanatz.oneadapter.internal.utils.extensions.inflateLayout
 import com.idanatz.oneadapter.models.TestModel
 import com.idanatz.oneadapter.test.R
 import org.amshove.kluent.shouldEqual
-import org.awaitility.Awaitility.await
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -22,21 +22,19 @@ class ValidLayoutResourceShouldInflateSuccessfully : BaseTest() {
 
     @Test
     fun test() {
-        // preparation
-        var expectedLayoutId = 0
-        runOnActivity {
-            oneAdapter.attachItemModule(TestItemModule())
-            expectedLayoutId = it.inflateLayout(testedLayoutResource).id
-        }
+        configure {
+            var expectedLayoutId = 0
 
-        // action
-        runOnActivity {
-            oneAdapter.add(modelGenerator.generateModel())
-        }
-
-        // assertion
-        await().untilAsserted {
-            expectedLayoutId shouldEqual rootView?.id
+            prepareOnActivity {
+                oneAdapter.attachItemModule(TestItemModule())
+                expectedLayoutId = it.inflateLayout(testedLayoutResource).id
+            }
+            actOnActivity {
+                oneAdapter.add(modelGenerator.generateModel())
+            }
+            untilAsserted {
+                expectedLayoutId shouldEqual rootView?.id
+            }
         }
     }
 
@@ -44,7 +42,7 @@ class ValidLayoutResourceShouldInflateSuccessfully : BaseTest() {
         override fun provideModuleConfig() = object : ItemModuleConfig() {
             override fun withLayoutResource() = testedLayoutResource
         }
-        override fun onBind(model: TestModel, viewBinder: ViewBinder) {
+        override fun onBind(item: Item<TestModel>, viewBinder: ViewBinder) {
             rootView = viewBinder.rootView
         }
     }

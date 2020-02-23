@@ -7,8 +7,9 @@ import com.idanatz.oneadapter.internal.InternalAdapter
 import com.idanatz.oneadapter.external.modules.Modules
 import com.idanatz.oneadapter.internal.utils.extensions.*
 import com.idanatz.oneadapter.internal.utils.extensions.getIndexOfItem
-import com.idanatz.oneadapter.internal.validator.MissingModuleDefinitionException
-import com.idanatz.oneadapter.internal.validator.MultipleModuleConflictException
+import com.idanatz.oneadapter.external.MissingModuleDefinitionException
+import com.idanatz.oneadapter.external.MultipleModuleConflictException
+import com.idanatz.oneadapter.external.UnsupportedClassException
 
 class OneAdapter(recyclerView: RecyclerView) {
 
@@ -17,8 +18,8 @@ class OneAdapter(recyclerView: RecyclerView) {
     private val internalItems: List<Diffable>
         get() = internalAdapter.data
 
-    val modulesActions: Modules.Actions
-        get() = internalAdapter.modules.actions
+    val modules: Modules
+        get() = internalAdapter.modules
 
     val itemCount: Int
         get() = internalAdapter.itemCount
@@ -125,16 +126,10 @@ class OneAdapter(recyclerView: RecyclerView) {
     /**
      * Retrieves the view type of an item with a given class.
      * Note that this class must implement the Diffable interface and the adapter must contain items of that class.
-     * @throws UnsupportedClassException if the class does not implement the Diffable interface.
+     * @throws UnsupportedClassException if the class does not implement the Diffable interface
+     * or is not registered as an Module data type.
      */
     fun getItemViewTypeFromClass(clazz: Class<*>): Int {
         return internalAdapter.getItemViewTypeFromClass(clazz)
-    }
-
-    /**
-     * Resets the paging module.
-     */
-    fun resetPaging() {
-        internalAdapter.resetPaging()
     }
 }

@@ -4,5 +4,6 @@
     android:id="@+id/test_model_small"
     android:layout_width="match_parent"
     android:layout_height="@dimen/small_model_height"
+    android:textSize="8dp"
     android:gravity="center"
-    android:text="text"/>
+    android:text="Model Small"/>

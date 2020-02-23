@@ -4,14 +4,13 @@ import android.widget.TextView
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import butterknife.BindView
 import butterknife.ButterKnife
+import com.idanatz.oneadapter.external.interfaces.Item
 import com.idanatz.oneadapter.external.modules.ItemModule
 import com.idanatz.oneadapter.helpers.BaseTest
 import com.idanatz.oneadapter.internal.holders.ViewBinder
 import com.idanatz.oneadapter.models.TestModel
-import com.idanatz.oneadapter.models.TestModel1
 import com.idanatz.oneadapter.test.R
 import org.amshove.kluent.shouldNotBe
-import org.awaitility.Awaitility.await
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -22,19 +21,16 @@ class WhenButterKnifeIsUsedViewsShouldBeBinded : BaseTest() {
 
     @Test
     fun test() {
-        // preparation
-        runOnActivity {
-            oneAdapter.attachItemModule(TestItemModule())
-        }
-
-        // action
-        runOnActivity {
-            oneAdapter.add(modelGenerator.generateModel())
-        }
-
-        // assertion
-        await().untilAsserted {
-            bindedView shouldNotBe null
+        configure {
+            prepareOnActivity {
+                oneAdapter.attachItemModule(TestItemModule())
+            }
+            actOnActivity {
+                oneAdapter.add(modelGenerator.generateModel())
+            }
+            untilAsserted {
+                bindedView shouldNotBe null
+            }
         }
     }
 
@@ -45,7 +41,7 @@ class WhenButterKnifeIsUsedViewsShouldBeBinded : BaseTest() {
         override fun onCreated(viewBinder: ViewBinder) {
             ButterKnife.bind(this, viewBinder.rootView)
         }
-        override fun onBind(model: TestModel, viewBinder: ViewBinder) {
+        override fun onBind(item: Item<TestModel>, viewBinder: ViewBinder) {
             bindedView = text
         }
     }

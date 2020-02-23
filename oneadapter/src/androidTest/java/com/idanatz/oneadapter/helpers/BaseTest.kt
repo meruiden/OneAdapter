@@ -5,14 +5,16 @@ import androidx.annotation.LayoutRes
 import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.idanatz.oneadapter.models.ModelGenerator
+import com.idanatz.oneadapter.generators.ModelGenerator
 import org.junit.runner.RunWith
 import org.junit.Before
 import androidx.test.ext.junit.rules.activityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.idanatz.oneadapter.OneAdapter
-import com.idanatz.oneadapter.models.ModulesGenerator
+import com.idanatz.oneadapter.dsl.TestBuilder
+import com.idanatz.oneadapter.generators.ModulesGenerator
 import com.idanatz.oneadapter.test.R
+import org.awaitility.Awaitility
 import org.junit.After
 import org.junit.Rule
 import java.util.concurrent.CountDownLatch
@@ -25,6 +27,7 @@ open class BaseTest {
     protected lateinit var recyclerView: RecyclerView
     protected lateinit var modelGenerator: ModelGenerator
     protected lateinit var modulesGenerator: ModulesGenerator
+    protected lateinit var touchSimulator: TouchSimulator
 
     private lateinit var handler: Handler
     private var screenHeight: Int = 0
@@ -33,18 +36,16 @@ open class BaseTest {
 
     @get:Rule var activityScenarioRule = activityScenarioRule<TestActivity>()
 
-    companion object {
-        const val INVALID_RESOURCE = -1
-    }
-
     @Before
     open fun setup() {
         modelGenerator = ModelGenerator()
         modulesGenerator = ModulesGenerator()
 
         activityScenarioRule.scenario.moveToState(Lifecycle.State.RESUMED)
-        runOnActivity {
+        activityScenarioRule.scenario.onActivity {
             handler = Handler()
+            touchSimulator = TouchSimulator(handler)
+
             screenHeight = it.resources.displayMetrics.heightPixels
             smallHolderHeight = it.resources.getDimension(R.dimen.small_model_height).toInt()
             largeHolderHeight = it.resources.getDimension(R.dimen.large_model_height).toInt()
@@ -58,14 +59,16 @@ open class BaseTest {
 
     @After
     open fun cleanup() {
+        handler.removeCallbacksAndMessages(null)
+        Awaitility.reset()
     }
 
-    protected fun runOnActivity(block: (activity: TestActivity) -> Unit) {
-        activityScenarioRule.scenario.onActivity(block)
+    fun configure(block: TestBuilder.() -> Unit) {
+        TestBuilder(activityScenarioRule.scenario, handler).run { block() }
     }
 
-    protected fun runWithDelay(block: () -> Unit) {
-        handler.postDelayed(block, 750)
+    protected fun runWithDelay(delayInMillis: Long = 600L, block: () -> Unit) {
+        handler.postDelayed(block, delayInMillis)
     }
 
     protected fun catchException(block: () -> Unit): Throwable {
