@@ -25,7 +25,12 @@ class OneAdapter(recyclerView: RecyclerView) {
     val itemCount: Int
         get() = internalAdapter.itemCount
 
-    val stateRestorationPolicy: StateRestorationPolicy = internalAdapter.stateRestorationPolicy
+    var stateRestorationPolicy: StateRestorationPolicy
+        get() = internalAdapter.stateRestorationPolicy
+        set(value) {
+            internalAdapter.stateRestorationPolicy = value
+        }
+
     /**
      * Sets the adapter's item list to the given list.
      * @throws MissingModuleDefinitionException if any of the given items are missing an ItemModule.
