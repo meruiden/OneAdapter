@@ -1,5 +1,6 @@
 package com.idanatz.oneadapter
 
+import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter.StateRestorationPolicy
 import com.idanatz.oneadapter.external.interfaces.Diffable
@@ -145,5 +146,13 @@ class OneAdapter(recyclerView: RecyclerView) {
      */
     fun resetPaging() {
         internalAdapter.resetPaging()
+    }
+
+    fun onSaveInstanceState(outState: Bundle) {
+        internalAdapter.onSaveInstanceState(outState)
+    }
+
+    fun onRestoreInstanceState(savedState: Bundle) {
+        internalAdapter.onRestoreInstanceState(savedState)
     }
 }
