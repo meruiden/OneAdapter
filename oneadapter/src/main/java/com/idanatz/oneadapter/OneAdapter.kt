@@ -1,6 +1,7 @@
 package com.idanatz.oneadapter
 
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Adapter.StateRestorationPolicy
 import com.idanatz.oneadapter.external.interfaces.Diffable
 import com.idanatz.oneadapter.external.modules.*
 import com.idanatz.oneadapter.internal.InternalAdapter
@@ -24,6 +25,7 @@ class OneAdapter(recyclerView: RecyclerView) {
     val itemCount: Int
         get() = internalAdapter.itemCount
 
+    val stateRestorationPolicy: StateRestorationPolicy = internalAdapter.stateRestorationPolicy
     /**
      * Sets the adapter's item list to the given list.
      * @throws MissingModuleDefinitionException if any of the given items are missing an ItemModule.
