@@ -1,5 +1,6 @@
 package com.idanatz.oneadapter.internal.paging
 
+import android.os.Bundle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -56,6 +57,18 @@ internal class EndlessScrollListener (
         previousTotalItemCount = if (includeEmptyState) 1 else 0
     }
 
+    fun onSaveInstanceState(outState: Bundle) {
+        outState.run {
+            putInt(STATE_PAGE, currentPage)
+            putInt(STATE_COUNT, previousTotalItemCount)
+        }
+    }
+
+    fun onRestoreInstanceState(savedState: Bundle) {
+        currentPage = savedState.getInt(STATE_PAGE, currentPage)
+        previousTotalItemCount = savedState.getInt(STATE_COUNT, previousTotalItemCount)
+    }
+
     private fun isUserScrolled(view: RecyclerView) = view.scrollState != RecyclerView.SCROLL_STATE_IDLE
 
     private fun evaluateLoadingState(): LoadingState {
@@ -78,5 +91,10 @@ internal class EndlessScrollListener (
 
     enum class LoadingState {
         Normal, LoadingStarted, MidLoading, FinishLoading
+    }
+
+    companion object {
+        const val STATE_PAGE = "ES_STATE_PAGE"
+        const val STATE_COUNT = "ES_STATE_COUNT"
     }
 }

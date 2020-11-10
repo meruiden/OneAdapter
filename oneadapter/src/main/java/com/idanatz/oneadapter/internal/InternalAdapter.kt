@@ -1,5 +1,6 @@
 package com.idanatz.oneadapter.internal
 
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import androidx.recyclerview.widget.DiffUtil
@@ -373,5 +374,13 @@ internal class InternalAdapter(val recyclerView: RecyclerView) : RecyclerView.Ad
 
     fun resetPaging() {
         endlessScrollListener?.resetState()
+    }
+
+    fun onSaveInstanceState(outState: Bundle) {
+        endlessScrollListener?.onSaveInstanceState(outState)
+    }
+
+    fun onRestoreInstanceState(savedState: Bundle) {
+        endlessScrollListener?.onRestoreInstanceState(savedState)
     }
 }
